@@ -12,7 +12,9 @@ class Subtracao extends StatefulWidget {
 
 class _SubtracaoState extends State<Subtracao> {
   String _current_difficult = null;
-  
+  int acertos = 0;
+  int erros = 0;
+  Timer timer;
   Color colorF = Color.fromRGBO(50,205,50,1);
   Color colorM = Color.fromRGBO(50,205,50,1);
   Color colorD = Color.fromRGBO(50,205,50,1);
@@ -98,7 +100,7 @@ class _SubtracaoState extends State<Subtracao> {
   }
    startTimer() {
   // Start the periodic timer which prints something every 1 seconds
-    Timer.periodic( Duration(seconds: 1), (time) {
+    timer = Timer.periodic( Duration(seconds: 1), (time) {
     setState(() {
       clock +=1;
     });
@@ -269,6 +271,7 @@ class _SubtracaoState extends State<Subtracao> {
                       GestureDetector(
                       onTap: (){
                           setState(() {
+                            clock = 0;
                               if (_current_difficult == null){
                                 showToast();
                                 return;
@@ -423,7 +426,10 @@ class _SubtracaoState extends State<Subtracao> {
               return Center(
                 child: RaisedButton(onPressed: (){
                   if (result == _results[index]){
+                    acertos ++;
                     generateMath();
+                  }else{
+                    erros ++;
                   }
                 },
                 color: Colors.orangeAccent,
@@ -432,7 +438,13 @@ class _SubtracaoState extends State<Subtracao> {
               );
             },
           ),
-            
+            SizedBox(height: 30,),
+            RaisedButton(onPressed: (){
+                 timer.cancel();
+                },
+                color: Colors.redAccent,
+                child: Text('Parar')
+                ),
           
           
         ],

@@ -12,10 +12,11 @@ class Multiplicacao extends StatefulWidget {
 }
 
 class _MultiplicacaoState extends State<Multiplicacao> {
-  
- 
+  int acertos = 0;
+  int erros = 0;
+  int scnd = 1;
   String _current_difficult = null;
-  
+  Timer timer;
   Color colorF = Color.fromRGBO(50,205,50,1);
   Color colorM = Color.fromRGBO(50,205,50,1);
   Color colorD = Color.fromRGBO(50,205,50,1);
@@ -101,7 +102,7 @@ class _MultiplicacaoState extends State<Multiplicacao> {
   }
    startTimer() {
   // Start the periodic timer which prints something every 1 seconds
-    Timer.periodic( Duration(seconds: 1), (time) {
+   timer =  Timer.periodic( Duration(seconds: scnd), (time) {
     setState(() {
       clock +=1;
     });
@@ -111,11 +112,45 @@ class _MultiplicacaoState extends State<Multiplicacao> {
  
  
 }
+
+setDesempenho(){
+
+  int total = acertos + erros;
+  double porcAcertos = acertos*100/total;
+  double porcErros =  erros*100/total;
+  String aproveitamento;
+  String kd;
+  double tempoParaResolver = clock/total;
+  String tempoClassificacao;
+
+  if (tempoParaResolver <= 2){
+    tempoClassificacao = 'Excelente, nota 10!';
+  }else if (tempoParaResolver > 2 && tempoParaResolver <= 3){
+    tempoClassificacao = 'Bom';
+  } else if(tempoParaResolver > 3 && tempoParaResolver <= 4){
+    tempoClassificacao = 'Da pra melhorar...';
+  } else if (tempoParaResolver > 4 && tempoParaResolver <= 5){
+          tempoClassificacao = 'Ruim. Você consegue melhorar!';
+  } else if (tempoParaResolver > 5){
+          tempoClassificacao = 'Péssimo, continue praticando para melhorar seu raciocinio';
+  }
+
+  if (porcAcertos > porcErros){
+    kd = 'Mais acertos do que erros';
+  } else if( porcAcertos < porcErros){
+    kd ='Mais erros do que acertos';
+  } else if( porcAcertos == porcErros){
+    kd = 'Mesma quantidade de acertos e erros';
+  }
+     
+
+  
+  }
   // deleayed code here 
   @override
   void initState() {
       
-      startTimer();
+     
       super.initState();
       
       
@@ -272,12 +307,19 @@ class _MultiplicacaoState extends State<Multiplicacao> {
                       GestureDetector(
                       onTap: (){
                           setState(() {
+                            
+                            clock = 0;
+                            startTimer();
+
                               if (_current_difficult == null){
                                 showToast();
                                 return;
                               }
                               bool = false;
                               generateMath();
+                             
+                             
+                              
                       
                       });
                         },
@@ -426,7 +468,10 @@ class _MultiplicacaoState extends State<Multiplicacao> {
               return Center(
                 child: RaisedButton(onPressed: (){
                   if (result == _results[index]){
+                    acertos++;
                     generateMath();
+                  } else{
+                    erros++;
                   }
                 },
                 color: Colors.orangeAccent,
@@ -435,8 +480,15 @@ class _MultiplicacaoState extends State<Multiplicacao> {
               );
             },
           ),
-            
-          
+            SizedBox(height: 30,),
+           RaisedButton(onPressed: (){
+
+                 setDesempenho();
+                 timer.cancel();
+                 },
+                color: Colors.redAccent,
+                child: Text('Parar')
+                ),
           
         ],
 
